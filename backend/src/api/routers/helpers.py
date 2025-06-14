@@ -3,8 +3,8 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 from dotenv import load_dotenv
 from ..models.response_model import SuggestedQuestionInput
-import requests
 from ...prompts.prompt_templates import suggested_questions_prompt_template
+from openai import OpenAI
 
 load_dotenv()
 
@@ -12,7 +12,9 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     raise RuntimeError("GEMINI_API_KEY is not set")
 
-GEMINI_ROUTE = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent"
+client = OpenAI(
+    base_url="https://generativelanguage.googleapis.com/v1beta", api_key=GEMINI_API_KEY
+)
 
 router = APIRouter(prefix="/helpers", tags=["helpers"])
 
@@ -27,18 +29,17 @@ async def get_suggested_questions(
         assistant_answer=suggested_question_input.assistant_answer,
     )
 
-    body = {"contents": [{"parts": [{"text": full_prompt}]}]}
-
     try:
-        response = requests.post(
-            GEMINI_ROUTE,
-            json=body,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {GEMINI_API_KEY}",
-            },
+        response = client.chat.completions.create(
+            model="gemini-1.5-flash-latest",
+            messages=[{"role": "user", "content": full_prompt}],
         )
-        return response.json()
+        # To match with the frontend expected schema
+        return {
+            "candidates": [
+                {"content": {"parts": [{"text": response.choices[0].message.content}]}}
+            ]
+        }
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Failed to get suggested questions: " + str(e)
