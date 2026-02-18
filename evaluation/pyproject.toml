@@ -15,7 +15,7 @@ dependencies = [
     "python-dotenv==1.0.1",
     "requests==2.32.4",
     "streamlit==1.37.0",
-    "deepeval==3.0.0",
+    "arize-phoenix-evals>=2.10.0",
     "langchain-google-vertexai==2.0.15",
     "asyncio==3.4.3",
     "huggingface-hub==0.26.2",
@@ -58,7 +58,7 @@ explicit_package_bases = true
 exclude = "src/post_install.py"
 
 [[tool.mypy.overrides]]
-module = ["deepeval.*", "huggingface_hub.*", "vertexai.*", "pandas.*", "plotly.*"]
+module = ["huggingface_hub.*", "vertexai.*", "pandas.*", "plotly.*", "phoenix.*", "google.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
