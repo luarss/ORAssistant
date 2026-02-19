@@ -55,7 +55,7 @@ warn_unused_ignores = true
 strict_optional = true
 disable_error_code = ["call-arg"]
 explicit_package_bases = true
-exclude = "src/post_install.py"
+exclude = ["src/post_install.py", "auto_evaluation/deprecated"]
 
 [[tool.mypy.overrides]]
 module = ["huggingface_hub.*", "vertexai.*", "pandas.*", "plotly.*", "phoenix.*", "google.*"]
